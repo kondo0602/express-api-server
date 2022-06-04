@@ -1,18 +1,12 @@
 const express = require("express");
 const app = express();
 
-app.use(express.json());
+const attachCookie = (req, res, next) => {
+  res.cookie("name", "first_party_cookie", { httpOnly: true });
+  next();
+};
 
-app.get("/", (req, res) => {
-  res.status(200).json({ text: "hello world" });
-});
-
-app.post("/", (req, res) => {
-  if (req.headers["content-type"] !== "application/json") {
-    res.status(400).json({ errorMessage: "Bad Request" });
-  }
-
-  res.status(201).json(req.body);
-});
+app.use(attachCookie);
+app.use(express.static("statics"));
 
 app.listen(3000);
