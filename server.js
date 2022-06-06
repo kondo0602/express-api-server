@@ -1,12 +1,29 @@
 const express = require("express");
-const app = express();
 
-const attachCookie = (req, res, next) => {
-  res.cookie("name", "first_party_cookie", { httpOnly: true });
+const appA = express();
+const appB = express();
+
+const attachFirstPartyCookie = (req, res, next) => {
+  res.cookie("name", "first_party_cookie", {
+    httpOnly: true,
+  });
   next();
 };
 
-app.use(attachCookie);
-app.use(express.static("statics"));
+const attachThirdPartyCookie = (req, res, next) => {
+  res.cookie("name", "third_party_cookie", {
+    httpOnly: true,
+    sameSite: "none",
+    secure: true,
+  });
+  next();
+};
 
-app.listen(3000);
+appA.use(attachFirstPartyCookie);
+appA.use(express.static("staticsA"));
+
+appB.use(attachThirdPartyCookie);
+appB.use(express.static("staticsB"));
+
+appA.listen(3000);
+appB.listen(3001);
