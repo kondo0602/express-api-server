@@ -48,3 +48,30 @@ appC.post("/", (req, res) => {
 });
 
 appC.listen(3002);
+
+const imageServerA = express();
+
+imageServerA.use("/", (req, res, next) => {
+  res.header("Cache-Control", "max-age=60");
+  next();
+});
+imageServerA.use("/", express.static("staticsB"));
+
+imageServerA.listen(3003);
+
+const imageServerB = express();
+
+imageServerB.use("/", (req, res, next) => {
+  res.header("Cache-Control", "no-cache");
+  next();
+});
+
+imageServerB.use("/", express.static("staticsB"));
+
+imageServerB.listen(3004);
+
+const appD = express();
+
+appD.use("/", express.static("staticsD"));
+
+appD.listen(3005);
